@@ -30,8 +30,8 @@ iterator = tf.data.Iterator.from_structure(
 
 image, label = iterator.get_next()
 model = net.inference(tf.cast(image, tf.float32), in_layers=layers)
-batch_labels = data.batch_expand_labels(label, [0, 1, 2])
-l = data.loss(model, batch_labels)
+batch_labels = net.batch_expand_labels(label, [0, 1, 2])
+l = net.loss(model, batch_labels)
 train_op = net.train(l, 1e-5) # Learning rate
 
 with tf.Session() as sess:
