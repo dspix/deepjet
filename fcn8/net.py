@@ -12,8 +12,9 @@ def _bilinear_filter(size):
     else:
         centre = factor - 0.5
     og = np.ogrid[:size, :size]
-    return (1 - abs(og[0] - centre) / factor) * \
-           (1 - abs(og[1] - centre) / factor)
+    bfilter = (1 - abs(og[0] - centre) / factor) * \
+        (1 - abs(og[1] - centre) / factor)
+    return bfilter
 
 def _upscore_filter(shape):
     h, w, nin, nout = shape
@@ -30,8 +31,6 @@ def _upscore_filter(shape):
 
 def _conv_relu(name, bottom, nout, ks=[1, 1], strides=[1, 1, 1, 1],
                in_layers=None, trainable=True, return_relu=True):
-    """
-    """
     with tf.variable_scope(name) as scope:
         if in_layers is None:
             nin = bottom.shape.as_list()[3]
@@ -147,39 +146,3 @@ def train(total_loss, learning_rate):
     op = tf.train.AdamOptimizer(learning_rate=learning_rate)
     grads = op.compute_gradients(total_loss, var_list=None)
     return op.apply_gradients(grads)
-
-def _expand_label(label, classes):
-    # element wise expansion of labels
-    label_expand = list(map(lambda x: tf.equal(label, x), classes))
-    stack = tf.stack(label_expand, axis=2)
-
-    return tf.to_float(stack)
-
-def batch_expand_labels(labels, classes):
-    batch_labels = tf.map_fn(
-        lambda x: _expand_label(x, classes),
-        labels,
-        dtype=tf.float32
-    )
-    return batch_labels
-
-def loss(logits, labels):
-    labels = tf.cast(labels, tf.int64)
-    xentropy = tf.nn.softmax_cross_entropy_with_logits_v2(
-        labels=labels,
-        logits=logits,
-        name='cross_entropy_per_example'
-    )
-    mean_xentropy = tf.reduce_mean(xentropy, name='cross_entropy')
-    tf.add_to_collection('losses', mean_xentropy)
-    total_loss = tf.add_n(tf.get_collection('losses'), name='total_loss')
-
-    return total_loss
-
-def pixel_accuracy(labels, pred):
-    """Total pixel accuarcy (user)"""
-    ac = tf.divide(
-        tf.reduce_sum(tf.cast(tf.equal(pred, labels), tf.float32)),
-        tf.cast(tf.size(labels), tf.float32)
-    )
-    return ac

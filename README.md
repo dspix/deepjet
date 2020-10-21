@@ -1,6 +1,25 @@
-# Fully convolutional net FCN8
+# Fully convolutional nets *in-the-wild*
 
-Example
+Code for training the FCN8s in the paper [Fully convolutional neural nets in the
+wild](https://doi.org/10.1080/2150704X.2020.1821120). The net is based on the
+[FCN8 reference
+implementation](https://github.com/shelhamer/fcn.berkeleyvision.org) written for
+TensorFlow v1.
+
+    @article{doi:10.1080/2150704X.2020.1821120,
+        author = {Daniel M. Simms},
+        title = {Fully convolutional neural nets in-the-wild},
+        journal = {Remote Sensing Letters},
+        volume = {11},
+        number = {12},
+        pages = {1080-1089},
+        year  = {2020},
+        publisher = {Taylor & Francis},
+        doi = {10.1080/2150704X.2020.1821120},
+        url = {https://doi.org/10.1080/2150704X.2020.1821120},
+        }
+
+### Example training loop
 
 ```python
 import tensorflow as tf
